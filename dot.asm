@@ -45,7 +45,7 @@ load_kernel:
   ; My attempt at loading the kernel -> looping to read N sectors of Stage-2 into the memory address 0x1000:0x0000
     mov si, 0 ; sector count = 0
     mov ah, 0x02 ; BIOS function 02h = read sectors
-    mov ch, 0x00 ;track/cylinder = 0
+    mov ch, 0x00 ; track/cylinder = 0
     mov cl, 0x02 ; first sector to read in this case being 2
     mov dh, 0x00 ; head = 0
     mov dl, [boot_drive] ; drive
@@ -76,7 +76,7 @@ exit:
     cli
     hlt
 
-my_string: db "Hello ASM", 0
+my_string: db "Bootloader starting", 0
 
 ; Puts 0's in the part where we dont have any code because bootloader is 512 bytes
 times 510 - ($-$$) db 0
