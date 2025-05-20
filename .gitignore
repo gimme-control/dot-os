@@ -1,3 +1,9 @@
 .dot.asm.swp
 .dot.asm.un~
 dot.asm~
+.gitignore.swp
+..gitignore.un~
+.gitignore~
+kernel.asm~
+.kernel.asm.swp 
+.kernel.asm.un~

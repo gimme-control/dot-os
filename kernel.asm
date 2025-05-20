@@ -1,7 +1,6 @@
-bits 16 
-org 0x1000 
+section .text
+    [bits 32]
+    [extern main]
+    call main 
+    jump $
 
-start: 
-    ; Kernel code goes here 
-    cli 
-    hlt 

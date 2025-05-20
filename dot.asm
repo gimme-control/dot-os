@@ -1,83 +1,107 @@
-; constants
-BOOT_DRIVE equ 0x80 ; BIOS drive number
-stage2_SECTORS equ 4  ; changeable to what the size of our stage2.bin actually is divided by 512 per 512 byte sector
-
-; Instructs code to be in 16 bit mode because bootloader runs in real mode
-bits 16
-
-; Specifies where in memory the program starts, allowing offset calculations
-org 0x7c00
+bits 16 ; 16 bit mode because bootloader runs in real mode
+org 0x7c00 ; Specifies where in memory the program starts
+KERNEL_LOCATION equ 0x1000 ; Where the kernel is in memory
 
 section .text
 
 start:
-    mov [boot_drive], dl
+    ; dl register stores boot disk value 
+    mov [BOOT_DISK], dl 
+
+    ; init registers
     xor ax, ax
+    mov es, ax
     mov ds, ax
+    mov bp, 0x8000
+    mov sp, bp
+
     mov si, my_string
 
 print_loop:
     lodsb
     or al, al
-    jz load_kernel
+    jz stage_1
     mov ah, 0x0e
     int 0x10
     jmp print_loop
 
-load_kernel:
-  ;  mov ah, 0x02
-  ;  mov al, 0x01
-  ;  mov ch, 0x00
-  ;  mov cl, 0x02
-  ;  mov dh, 0x00
-  ;  mov dl, 0x00
+stage_1: 
+    mov bx, KERNEL_LOCATION 
+    mov dh, 2
 
-  ;  mov ax, 0x1000
-  ;  mov es, ax
-  ;  mov bx, 0x0000
+    mov ah, 0x02 
+    mov al, dh 
+    mov ch, 0x00
+    mov dh, 0x00 
+    mov cl, 0x02 
+    mov dl, [BOOT_DISK]
 
-  ;  int 0x13
-  ;  jc disk_error
+    int 0x13
 
-  ;  ; Jumping to the kernel
-  ;  jmp 0x1000:0x0000
+    ; Video Mode (optional but generally mode)
+    mov ah, 0x0 
+    mov al, 0x3 
+    int 0x10 
 
-  ; My attempt at loading the kernel -> looping to read N sectors of Stage-2 into the memory address 0x1000:0x0000
-    mov si, 0 ; sector count = 0
-    mov ah, 0x02 ; BIOS function 02h = read sectors
-    mov ch, 0x00 ; track/cylinder = 0
-    mov cl, 0x02 ; first sector to read in this case being 2
-    mov dh, 0x00 ; head = 0
-    mov dl, [boot_drive] ; drive
+stage_2: 
+    CODE_SEG equ GDT_code - GDT_start 
+    DATA_SEG equ GDT_data - GDT_start 
 
-    mov ax, 0x1000 ; ES:BX = 0x1000:0x0000 <- load target
+    cli 
+    lgdt [GDT_descriptor]
+
+    mov eax, cr0 ; cr0 contains the settings
+    or eax, 1 ; setting protected mode by flipping lowest bit
+    mov cr0, eax 
+
+    jmp CODE_SEG:start_protected_mode
+    jmp $ ; placeholder in case above instruction fails
+
+
+BOOT_DISK: db 0 
+
+GDT_start:
+    GDT_null:
+        dd 0x0
+        dd 0x0
+
+    GDT_code: 
+        dw 0xffff
+        dw 0x0
+        dw 0x0
+        db 0b10011010
+        db 0b11001111
+        db 0x0 
+
+    GDT_data: 
+        dw 0xffff
+        dw 0x0
+        db 0x0
+        db 0b10010010 
+        db 0b11001111
+        db 0x0 
+GDT_end: 
+
+GDT_descriptor: 
+    dw GDT_end - GDT_start - 1
+    dd GDT_start 
+
+[bits 32]
+
+start_protected_mode: 
+    mov ax, DATA_SEG
+    mov ds, ax
+    mov ss, ax 
     mov es, ax
-    xor bx, bx
+    mov fs, ax
+    mov gs, ax 
 
-read_loop:
-    push si ; save how many we've read so far
-    mov al, 1 ; total sectors intended to read
-    int 0x13 ; BIOS disk read
-    jc disk_error ; if CF=1 -> error
+    mov ebp, 0x90000
+    mov esp, ebp 
 
-    pop si
-    inc si ; same as sectors_read++
-    inc cl ; mov to next sector on the disk
-    cmp si, STAGE2_SECTORS
-    jl read_loop ; loop until we've read them all
-
-    jmp 0x1000:0x0000 ; far-jump into the Stage2 Code
-
-disk_error:
-    cli
-    hlt
-
-exit:
-    cli
-    hlt
+    jmp KERNEL_LOCATION
 
 my_string: db "Bootloader starting", 0
 
-; Puts 0's in the part where we dont have any code because bootloader is 512 bytes
-times 510 - ($-$$) db 0
-dw 0xAA55
+times 510 - ($-$$) db 0 ; 0s where we don't have code
+dw 0xAA55 ; magic number at the end to specify bootloader
