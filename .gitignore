@@ -1,16 +1,8 @@
-.dot.asm.swp
-.dot.asm.un~
-dot.asm~
-.gitignore.swp
-..gitignore.un~
-.gitignore~
-kernel.asm~
-.kernel.asm.swp 
-.kernel.asm.un~
-.kernel.cpp.un~
-.run.sh.un~
-.zeroes.asm.un~
+# Vim swap files
+*.swp
+
+# Vim backup files
+*~
+
+# Binaries
 Binaries
-zeroes.asm~
-run.sh~
-kernel.cpp~
