@@ -1,6 +1,9 @@
-section .text
-    [bits 32]
-    [extern main]
-    call main 
-    jump $
+[bits 32]
+[extern main]
 
+global _start
+
+section .text
+_start:
+    call main
+    jmp $
