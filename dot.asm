@@ -32,6 +32,7 @@ start:
     int 0x10
 
 
+
 stage_1:
     CODE_SEG equ GDT_code - GDT_start
     DATA_SEG equ GDT_data - GDT_start
@@ -43,7 +44,7 @@ stage_1:
     mov cr0, eax
     jmp CODE_SEG:start_protected_mode
 
-    jmp $
+  ;  jmp $
 
 
 GDT_start:
@@ -74,6 +75,8 @@ GDT_descriptor:
     dd GDT_start
 
 
+
+
 [bits 32]
 start_protected_mode:
     mov ax, DATA_SEG
@@ -86,7 +89,7 @@ start_protected_mode:
 	mov ebp, 0x90000		; 32 bit stack base pointer
 	mov esp, ebp
 
-    jmp KERNEL_LOCATION ; code segment selector in the GDT, just trying to make the build work for me
+    jmp 0x08:0x1000; code segment selector in the GDT, just trying to make the build work for me
 
 
 
