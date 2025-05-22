@@ -6,10 +6,47 @@
 volatile char* vga = (volatile char*)0xB8000; // VGA buffer memory starts at specific address
 int cursor = 0; // index to keep track of where the next character should go (every char is 2 bytes)
 
+// outputs a byte to an I/O port
+static inline void outb(unsigned short port, unsigned char val) {
+    asm volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
+}
+
+//moves the hardware cursor to match 'cursor' variable
+void move_cursor() {
+    unsigned short pos = cursor / 2; // convert byte offset to character position
+    outb(0x3D4, 14);
+    outb(0x3D5, (pos >> 8) & 0xFF);
+    outb(0x3D4, 15);
+    outb(0x3D5, pos & 0xFF);
+}
+
+// scroller function to scroll up by one line if we reach the bottom of the screen
+void scroll() {
+    if (cursor >= 80 * 25 * 2) {
+        for (int i = 0; i< 80 * 24 * 2; i++) {
+            vga[i] = vga[i+160]; // shifts each line up by 1
+        }
+        for (int i = 80 * 24 * 2; i < 80 * 25 * 2; i += 2) {
+            vga[i] = ' ';
+            vga[i+1] = 0x0F; // clear last line
+        }
+        cursor -= 160;
+    }
+}
+
 // print a single char to VGA text buffer
 void print_char(char c) {
-    vga[cursor++] = c; // character byte
-    vga[cursor++] = 0x0F; // Attribute byte: white text on black background
+    if (c == '\n') {
+        cursor += (160 - (cursor % 160)); // go to start of next line
+    } else if (c == '\t') {
+        for (int i = 0; i < 4; ++i) print_char(' '); // tabs is equal to 4 spaces
+    } else {
+        vga[cursor++] = c; // character byte
+        vga[cursor++] = 0x0F; // Attribute byte: white text on black background
+    }
+
+    scroll();
+    move_cursor();
 }
 
 // null-terminated string to screen gets printed
