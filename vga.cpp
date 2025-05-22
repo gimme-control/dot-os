@@ -55,7 +55,7 @@ void print_hex(unsigned int value) { // prints an unsigned int in hexadecimal (e
 }
 
 // printf-style function to handle format strings and variable args
-void printf(const char* fmt, ...) {
+extern "C" void printf(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt); // initialize variable argument list starting after fmt
 
