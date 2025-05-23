@@ -76,7 +76,6 @@ void print_int(int num) {
     }
 }
 
-// Print an unsigned integer in hex
 void print_hex(unsigned int val) {
     const char* hex_chars = "0123456789ABCDEF";
     print_str("0x");
