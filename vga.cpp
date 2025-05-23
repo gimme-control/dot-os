@@ -2,13 +2,28 @@
 #include <stdint.h> 
 #include "vga.h"
 
-// Definitions
-#define u16 uint16_t
-#define u8 uint8_t
-
 // VGA text buffer
+int VGA_WIDTH = 80; 
 volatile unsigned short* vga = (volatile unsigned short*)0xB8000;
 int cursor_pos = 0; // Position in terms of characters, not bytes
+
+
+// IO helper functions 
+static inline void outb(u16 port, u8 val)
+{
+    __asm__ volatile ( "outb %%al, %%dx" : : "a"(val), "Nd"(port) : "memory"); 
+}
+
+static inline u8 inb(u16 port)
+{
+    u8 ret; 
+    __asm__ volatile ( "inb %%dx, %%al" 
+                    : "=a" (ret)
+                    : "Nd" (port)
+                    : "memory");
+
+    return ret; 
+}
 
 
 // Clear screen function
@@ -32,30 +47,33 @@ void print_char(char c) {
         cursor_pos++;
     }
 
-    // Handle screen scrolling
-    if (cursor_pos >= 80 * 25) {
-        // Scroll up one line
-        for (int i = 0; i < 80 * 24; i++) {
-            vga[i] = vga[i + 80];
-        }
-        // Clear the last line
-        for (int i = 80 * 24; i < 80 * 25; i++) {
-            vga[i] = (0x0F << 8) | ' ';
-        }
-        cursor_pos = 80 * 24; // Move cursor to start of last line
+
+     // Handle screen scrolling
+     if (cursor_pos >= 80 * 25) {
+         // Scroll up one line
+         for (int i = 0; i < 80 * 24; i++) {
+             vga[i] = vga[i + 80];
+         }
+         // Clear the last line
+         for (int i = 80 * 24; i < 80 * 25; i++) {
+             vga[i] = (0x0F << 8) | ' ';
+         }
+         cursor_pos = 80 * 24; // Move cursor to start of last line
     }
+
+    update_cursor(cursor_pos % VGA_WIDTH, cursor_pos / VGA_WIDTH);
 }
 
 // Print a null-terminated string
 void print_str(const char* str) {
+    int count = 0;
     if (!str) {
         return;
     }
     while (*str) {
-        update_cursor(cursor_pos, cursor_pos);
-        ++cursor_pos;
         print_char(*str++);
     }
+
 }
 
 // Print an integer (base 10)
@@ -148,21 +166,6 @@ extern "C" void kprintf(const char* fmt, ...) {
     va_end(args);
 }
 
-static inline void outb(u16 port, u8 val)
-{
-    __asm__ volatile ( "outb %%al, %%dx" : : "a"(val), "Nd"(port) : "memory"); 
-}
-
-static inline u8 inb(u16 port)
-{
-    u8 ret; 
-    __asm__ volatile ( "inb %%dx, %%al" 
-                    : "=a" (ret)
-                    : "Nd" (port)
-                    : "memory");
-
-    return ret; 
-}
 
 extern "C" void disable_cursor()
 {
@@ -180,8 +183,10 @@ extern "C" void enable_cursor(u8 cursor_start, u8 cursor_end)
 
 void update_cursor(int x, int y)
 {
-	uint16_t pos = y * 2 + x;
+	uint16_t pos = y * VGA_WIDTH + x;
 
+	outb(0x3D4, 0x0F);
+    outb(0x3D5, (u8) (pos & 0xFF));
 	outb(0x3D4, 0x0E);
 	outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
 }

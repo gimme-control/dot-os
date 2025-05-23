@@ -6,7 +6,6 @@ extern "C" void enable_cursor();
 
 extern "C" int main() {
 
-    kclear();
 
     kprintf("Hello from DotOS!\n");
     kprintf("Kernel successfully loaded at 0x1000\n");
@@ -20,11 +19,10 @@ extern "C" int main() {
     kprintf("Percent literal: %%\n");
     kprintf("Multiple args: %d + %d = %d\n", 5, 3, 8);
 
-    kprint("Null terminated string"); 
 
     // (NOTE) Not the bios implemented cursor
     disable_cursor();  
-    enable_cursor();  // cursor_start / cursor_end args available
+    enable_cursor();  // cursor_start & cursor_end args available
 
     
     
