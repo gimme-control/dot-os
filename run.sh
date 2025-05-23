@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 export PATH=$PATH:/usr/local/i386elfgcc/bin
 
@@ -30,4 +30,4 @@ echo "Checking file sizes..."
 ls -la Binaries/
 
 echo "Running QEMU..."
-qemu-system-x86_64 -drive format=raw,file="Binaries/OS.bin",index=0,if=floppy -m 128M -no-reboot
+qemu-system-x86_64 -drive format=raw,file="Binaries/OS.bin",index=0,if=floppy -m 128M -no-reboot # (TODO) Add way to launch with a bigger res
