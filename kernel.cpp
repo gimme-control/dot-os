@@ -1,5 +1,8 @@
 extern "C" void kprintf(const char* fmt, ...);
 extern "C" void kclear();
+extern "C" void kprint(const char*); 
+extern "C" void disable_cursor(); 
+extern "C" void enable_cursor(); 
 
 extern "C" int main() {
 
@@ -16,6 +19,16 @@ extern "C" int main() {
     // Test edge cases
     kprintf("Percent literal: %%\n");
     kprintf("Multiple args: %d + %d = %d\n", 5, 3, 8);
+
+    kprint("Null terminated string"); 
+
+    // (NOTE) Not the bios implemented cursor
+    disable_cursor();  
+    enable_cursor();  // cursor_start / cursor_end args available
+
+    
+    
+
 
     return 0;
 }

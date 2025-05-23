@@ -1,12 +1,19 @@
 #include <stdarg.h>
+#include <stdint.h> 
+#include "vga.h"
+
+// Definitions
+#define u16 uint16_t
+#define u8 uint8_t
 
 // VGA text buffer
 volatile unsigned short* vga = (volatile unsigned short*)0xB8000;
 int cursor_pos = 0; // Position in terms of characters, not bytes
 
+
 // Clear screen function
 void clear_screen() {
-    for (int i = 0; i < 80 * 25; i++) {
+    for (int i = 0; i < cursor_pos; i++) { // (NOTE) 80*25 -> cursor_pos
         vga[i] = (0x0F << 8) | ' '; // White on black space
     }
     cursor_pos = 0;
@@ -42,10 +49,11 @@ void print_char(char c) {
 // Print a null-terminated string
 void print_str(const char* str) {
     if (!str) {
-        print_str("(null)");
         return;
     }
     while (*str) {
+        update_cursor(cursor_pos, cursor_pos);
+        ++cursor_pos;
         print_char(*str++);
     }
 }
@@ -138,6 +146,44 @@ extern "C" void kprintf(const char* fmt, ...) {
     }
 
     va_end(args);
+}
+
+static inline void outb(u16 port, u8 val)
+{
+    __asm__ volatile ( "outb %%al, %%dx" : : "a"(val), "Nd"(port) : "memory"); 
+}
+
+static inline u8 inb(u16 port)
+{
+    u8 ret; 
+    __asm__ volatile ( "inb %%dx, %%al" 
+                    : "=a" (ret)
+                    : "Nd" (port)
+                    : "memory");
+
+    return ret; 
+}
+
+extern "C" void disable_cursor()
+{
+    outb(0x3D4, 0x0A);
+    outb(0x3D5, 0x20);
+}
+
+extern "C" void enable_cursor(u8 cursor_start, u8 cursor_end)
+{
+    outb(0x3d4, 0x0A);
+    outb(0x3d5, (inb(0x3D5) & 0xC0) | cursor_start);
+    outb(0x3d4, 0x0B);
+    outb(0x3d5, (inb(0x3D5) & 0xE0) | cursor_end);
+}
+
+void update_cursor(int x, int y)
+{
+	uint16_t pos = y * 2 + x;
+
+	outb(0x3D4, 0x0E);
+	outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
 }
 
 // Additional utility functions
