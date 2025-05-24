@@ -24,9 +24,5 @@ extern "C" int main() {
     disable_cursor();  
     enable_cursor();  // cursor_start & cursor_end args available
 
-    
-    
-
-
     return 0;
 }

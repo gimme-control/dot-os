@@ -10,32 +10,24 @@ start:
 
     cli
 
-
     mov [BOOT_DISK], dl
-
 
     xor ax, ax
     mov es, ax
     mov ds, ax
     mov ss, ax
 
-
     mov bp, 0x8000
     mov sp, bp
 
-
     sti
-
 
     mov si, loading_msg
     call print_string
 
-
     call load_kernel
 
-
     jc disk_error
-
 
     mov si, success_msg
     call print_string
@@ -44,7 +36,6 @@ start:
     mov ah, 0x00
     mov al, 0x03
     int 0x10
-
 
     jmp enter_protected_mode
 
@@ -56,7 +47,6 @@ disk_error:
 load_kernel:
     pusha
 
-
     mov ah, 0x00
     mov dl, [BOOT_DISK]
     int 0x13
@@ -64,12 +54,12 @@ load_kernel:
 
     ; Load kernel (2 sectors starting from sector 2)
     mov bx, KERNEL_LOCATION    ; ES:BX = destination buffer
-    mov ah, 0x02              ; Read sectors function
+    mov ah, 0x02               ; Read sectors function
     mov al, 15                 ; Number of sectors to read (increased)
-    mov ch, 0x00              ; Cylinder/track number
-    mov cl, 0x02              ; Sector number (starts from 1, so 2 is second sector)
-    mov dh, 0x00              ; Head number
-    mov dl, [BOOT_DISK]       ; Drive number
+    mov ch, 0x00               ; Cylinder/track number
+    mov cl, 0x02               ; Sector number (starts from 1)
+    mov dh, 0x00               ; Head number
+    mov dl, [BOOT_DISK]        ; Drive number
 
     int 0x13
     jc .load_failed
@@ -87,12 +77,14 @@ load_kernel:
 print_string:
     pusha
     mov ah, 0x0e
+
 .loop:
     lodsb
     cmp al, 0
     je .done
     int 0x10
     jmp .loop
+    
 .done:
     popa
     ret
@@ -163,9 +155,7 @@ start_protected_mode:
     mov ebp, 0x90000
     mov esp, ebp
 
-
     call KERNEL_LOCATION
-
 
     jmp $
 

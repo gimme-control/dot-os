@@ -2,8 +2,8 @@
 #include <stdint.h> 
 #include "vga.h"
 
-// VGA text buffer
 int VGA_WIDTH = 80; 
+// VGA text buffer
 volatile unsigned short* vga = (volatile unsigned short*)0xB8000;
 int cursor_pos = 0; // Position in terms of characters, not bytes
 
@@ -28,7 +28,7 @@ static inline u8 inb(u16 port)
 
 // Clear screen function
 void clear_screen() {
-    for (int i = 0; i < cursor_pos; i++) { // (NOTE) 80*25 -> cursor_pos
+    for (int i = 0; i < cursor_pos; i++) { // 80*25 -> cursor_pos
         vga[i] = (0x0F << 8) | ' '; // White on black space
     }
     cursor_pos = 0;
@@ -73,7 +73,6 @@ void print_str(const char* str) {
     while (*str) {
         print_char(*str++);
     }
-
 }
 
 // Print an integer (base 10)
