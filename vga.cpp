@@ -1,8 +1,13 @@
 #include <stdarg.h>
 #include <stdint.h> 
-#include "vga.h"
 
+// Definitions
+#define u16 uint16_t
+#define u8 uint8_t
+
+void update_cursor(int, int); 
 int VGA_WIDTH = 80; 
+
 // VGA text buffer
 volatile unsigned short* vga = (volatile unsigned short*)0xB8000;
 int cursor_pos = 0; // Position in terms of characters, not bytes
