@@ -5,7 +5,7 @@ export PATH=$PATH:/usr/local/i386elfgcc/bin
 # Create binaries directory if it doesn't exist
 mkdir -p Binaries
 
-nasm "dot.asm" -f bin -o "Binaries/boot.bin"
+nasm "boot.asm" -f bin -o "Binaries/boot.bin"
 
 nasm "kernel.asm" -f elf -o "Binaries/kernel_entry.o"
 
