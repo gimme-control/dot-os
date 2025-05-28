@@ -1,9 +1,5 @@
 #include <stdarg.h>
-#include <stdint.h> 
-
-// Definitions
-#define u16 uint16_t
-#define u8 uint8_t
+#include "io.cpp" // (NOTE) Need to fix this to io.h at some point
 
 void update_cursor(int, int); 
 int VGA_WIDTH = 80; 
@@ -11,25 +7,6 @@ int VGA_WIDTH = 80;
 // VGA text buffer
 volatile unsigned short* vga = (volatile unsigned short*)0xB8000;
 int cursor_pos = 0; // Position in terms of characters, not bytes
-
-
-// IO helper functions 
-static inline void outb(u16 port, u8 val)
-{
-    __asm__ volatile ( "outb %%al, %%dx" : : "a"(val), "Nd"(port) : "memory"); 
-}
-
-static inline u8 inb(u16 port)
-{
-    u8 ret; 
-    __asm__ volatile ( "inb %%dx, %%al" 
-                    : "=a" (ret)
-                    : "Nd" (port)
-                    : "memory");
-
-    return ret; 
-}
-
 
 // Clear screen function
 void clear_screen() {
