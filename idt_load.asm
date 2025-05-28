@@ -4,7 +4,14 @@ isr_stub_%+%1:
     iret 
 %endmacro
 
+%macro isr_no_err_stub 1
+isr_stub_%+%1:
+    call exception_handler
+    iret
+%endmacro
+
 extern exception_handler
+
 isr_no_err_stub 0
 isr_no_err_stub 1
 isr_no_err_stub 2
