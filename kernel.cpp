@@ -1,11 +1,16 @@
 extern "C" void kprintf(const char* fmt, ...);
 extern "C" void kclear();
-extern "C" void kprint(const char*); 
-extern "C" void disable_cursor(); 
-extern "C" void enable_cursor(); 
+extern "C" void kprint(const char*);
+extern "C" void disable_cursor();
+extern "C" void enable_cursor();
+extern "C" void PIC_remap(int, int);
+extern "C" void idt_init();
+
 
 extern "C" int main() {
 
+    PIC_remap(0x20, 0x28); // remap irqs
+    idt_init(); // loading idt
 
     kprintf("Hello from DotOS!\n");
     kprintf("Kernel successfully loaded at 0x1000\n");
@@ -21,7 +26,7 @@ extern "C" int main() {
 
 
     // (NOTE) Not the bios implemented cursor
-    disable_cursor();  
+    disable_cursor();
     enable_cursor();  // cursor_start & cursor_end args available
 
     return 0;

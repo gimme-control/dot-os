@@ -1,8 +1,8 @@
-#include <stdint.h> 
-#include "io.cpp" // (TODO) Change to io.h at some point 
+#include <stdint.h>
+#include "io.cpp" // (TODO) Change to io.h at some point
 
-#define PIC1		0x20		// IO base address for master PIC 
-#define PIC2		0xA0		// IO base address for slave PIC 
+#define PIC1		0x20		// IO base address for master PIC
+#define PIC2		0xA0		// IO base address for slave PIC
 #define PIC1_COMMAND	PIC1
 #define PIC1_DATA	(PIC1+1)
 #define PIC2_COMMAND	PIC2
@@ -16,6 +16,85 @@ void PIC_sendEOI(u8 irq)
 {
     if(irq >= 8)
         outb(PIC2_COMMAND, PIC_EOI);
-        
-    outb(PIC1_COMMAND, PIC_EOI); 
+
+    outb(PIC1_COMMAND, PIC_EOI);
 }
+
+#define ICW1_ICW4 0x01
+#define ICW1_INIT 0x10
+#define ICW4_8086 0x01
+
+void io_wait(void){
+    outb(0x80, 0); //dummy I/O write to introduce a small delay
+}
+
+void PIC_remap(int offset1, int offset2) {
+    u8 a1 = inb(PIC1_DATA); // save masks
+    u8 a2 = inb(PIC2_DATA);
+
+    outb(PIC1_COMMAND, ICW1_INIT | ICW1_ICW4);
+    io_wait();
+    outb(PIC2_COMMAND, ICW1_INIT | ICW1_ICW4);
+    io_wait();
+    outb(PIC1_DATA, offset1);
+    io_wait();
+    outb(PIC2_COMMAND, offset2);
+    io_wait();
+    outb(PIC1_DATA, 4);
+    io_wait();
+    outb(PIC2_DATA, 2);
+    io_wait();
+    outb(PIC1_DATA, ICW4_8086);
+    io_wait();
+    outb(PIC2_DATA, ICW4_8086);
+    io_wait();
+
+    // Restore saved masks
+    outb(PIC1_DATA, a1);
+    outb(PIC2_DATA, a2);
+
+}
+
+// help to selectively enable/disable IRQs
+
+void IRQ_set_mask(u8 irq_line) {
+    u16 port;
+    u8 value;
+
+    if (irq_line < 8) {
+        port = PIC1_DATA;
+    } else {
+        port = PIC2_DATA;
+        irq_line -= 8;
+    }
+    value = inb(port) | (1 << irq_line);
+    outb(port, value);
+}
+
+void IRQ_clear_mask(u8 irq_line) {
+    u16 port;
+    u8 value;
+
+    if (irq_line < 8) {
+        port = PIC1_DATA;
+    } else {
+        port = PIC2_DATA;
+        irq_line -= 8;
+    }
+    value = inb(port) & ~(1 << irq_line);
+    outb(port, value);
+}
+
+
+// diagnostic read functions to help debug and handle spurious IRQs
+#define PIC_READ_IRR 0x0A
+#define PIC_READ_ISR 0x0B
+
+static u16 __pic_get_irq_reg(int ocw3) {
+    outb(PIC1_COMMAND, ocw3);
+    outb(PIC2_COMMAND, ocw3);
+    return (inb(PIC2_COMMAND) << 8) | inb(PIC1_COMMAND);
+}
+
+u16 pic_get_irr(void) { return __pic_get_irq_reg(PIC_READ_IRR); }
+u16 pic_get_isr(void) { return __pic_get_irq_reg(PIC_READ_ISR); }
