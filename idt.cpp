@@ -3,7 +3,6 @@
 extern void irq0(); // asm stubs for IRQ handlers
 extern void irq1();
 
-
 #define u32 uint32_t
 #define u16 uint16_t
 #define u8 uint8_t

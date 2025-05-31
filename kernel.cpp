@@ -25,7 +25,7 @@ extern "C" int main() {
     kprintf("Multiple args: %d + %d = %d\n", 5, 3, 8);
 
 
-    // (NOTE) Not the bios implemented cursor
+    // (NOTE) Cursor drawn directly by the GPU, not the BIOS
     disable_cursor();
     enable_cursor();  // cursor_start & cursor_end args available
 

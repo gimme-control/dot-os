@@ -24,9 +24,6 @@ void PIC_sendEOI(u8 irq)
 #define ICW1_INIT 0x10
 #define ICW4_8086 0x01
 
-void io_wait(void){
-    outb(0x80, 0); //dummy I/O write to introduce a small delay
-}
 
 void PIC_remap(int offset1, int offset2) {
     u8 a1 = inb(PIC1_DATA); // save masks
@@ -52,11 +49,15 @@ void PIC_remap(int offset1, int offset2) {
     // Restore saved masks
     outb(PIC1_DATA, a1);
     outb(PIC2_DATA, a2);
+}
 
+void pic_disable(void)
+{
+    outb(PIC1_DATA, 0xff);
+    outb(PIC2_DATA, 0xff);
 }
 
 // help to selectively enable/disable IRQs
-
 void IRQ_set_mask(u8 irq_line) {
     u16 port;
     u8 value;

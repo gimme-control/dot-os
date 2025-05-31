@@ -19,3 +19,7 @@ static inline u8 inb(u16 port)
 
     return ret; 
 }
+
+void io_wait(void){
+    outb(0x80, 0); //dummy I/O write to introduce a small delay
+}
