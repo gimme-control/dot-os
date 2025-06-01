@@ -11,8 +11,6 @@ nasm "kernel.asm" -f elf -o "Binaries/kernel_entry.o"
 
 nasm "idt_load.asm" -f elf -o "Binaries/idt_load.o"
 
-# nasm "irq.asm" -f elf -o "Binaries/irq.o"
-
 i386-elf-gcc -ffreestanding -m32 -g -c "kernel.cpp" -o "Binaries/kernel.o"
 i386-elf-gcc -ffreestanding -m32 -g -c "idt.cpp" -o "Binaries/idt.o"
 i386-elf-gcc -ffreestanding -m32 -g -c "pic.cpp" -o "Binaries/pic.o"
@@ -20,7 +18,7 @@ i386-elf-gcc -ffreestanding -m32 -g -c "pic.cpp" -o "Binaries/pic.o"
 i386-elf-gcc -ffreestanding -m32 -g -c "vga.cpp" -o "Binaries/vga.o"
 nasm "kernel.asm" -f elf -o "Binaries/kernel_entry.o"
 
-i386-elf-ld -o "Binaries/full_kernel.bin" -Ttext 0x1000 "Binaries/kernel_entry.o" "Binaries/kernel.o" "Binaries/vga.o" "Binaries/irq.o" "Binaries/idt.o" "Binaries/idt_load.o" "Binaries/pic.o" --oformat binary
+i386-elf-ld -o "Binaries/full_kernel.bin" -Ttext 0x1000 "Binaries/kernel_entry.o" "Binaries/kernel.o" "Binaries/idt_load.o" "Binaries/vga.o" "Binaries/idt.o"  "Binaries/pic.o" --oformat binary
 
 cat "Binaries/boot.bin" "Binaries/full_kernel.bin" > "Binaries/OS.bin"
 
