@@ -1,5 +1,9 @@
 [bits 32]
-gloabl irq0
-irq0:
-    call irq_handler
+
+global irq0
+irq1:
+    hlt 
+    jmp irq1
     iretd
+
+

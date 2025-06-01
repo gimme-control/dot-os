@@ -1,5 +1,4 @@
-#include <stdint.h>
-#include "io.cpp" // (TODO) Change to io.h at some point
+#include "io.h"
 
 #define PIC1		0x20		// IO base address for master PIC
 #define PIC2		0xA0		// IO base address for slave PIC
@@ -10,7 +9,6 @@
 
 #define PIC_EOI     0x20
 #define u8 uint8_t
-
 
 void PIC_sendEOI(u8 irq)
 {
@@ -24,8 +22,7 @@ void PIC_sendEOI(u8 irq)
 #define ICW1_INIT 0x10
 #define ICW4_8086 0x01
 
-
-void PIC_remap(int offset1, int offset2) {
+extern "C" void PIC_remap(int offset1, int offset2) {
     u8 a1 = inb(PIC1_DATA); // save masks
     u8 a2 = inb(PIC2_DATA);
 
@@ -35,7 +32,7 @@ void PIC_remap(int offset1, int offset2) {
     io_wait();
     outb(PIC1_DATA, offset1);
     io_wait();
-    outb(PIC2_COMMAND, offset2);
+    outb(PIC2_DATA, offset2);
     io_wait();
     outb(PIC1_DATA, 4);
     io_wait();
@@ -51,13 +48,14 @@ void PIC_remap(int offset1, int offset2) {
     outb(PIC2_DATA, a2);
 }
 
+// Disables the entire PIC in case we want to use APIC or UAPIC 
 void pic_disable(void)
 {
     outb(PIC1_DATA, 0xff);
     outb(PIC2_DATA, 0xff);
 }
 
-// help to selectively enable/disable IRQs
+// Selectively disable IRQs
 void IRQ_set_mask(u8 irq_line) {
     u16 port;
     u8 value;
@@ -71,6 +69,7 @@ void IRQ_set_mask(u8 irq_line) {
     value = inb(port) | (1 << irq_line);
     outb(port, value);
 }
+
 
 void IRQ_clear_mask(u8 irq_line) {
     u16 port;

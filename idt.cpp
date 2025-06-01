@@ -1,11 +1,8 @@
 #include <stdint.h>
+#include "io.h"
 
 extern void irq0(); // asm stubs for IRQ handlers
 extern void irq1();
-
-#define u32 uint32_t
-#define u16 uint16_t
-#define u8 uint8_t
 
 struct idt_entry_t
 {
@@ -29,10 +26,10 @@ typedef struct
 
 static idtr_t idtr;
 
-__attribute__((noreturn))
+extern "C"  __attribute__((noreturn)) 
     void exception_handler(void);
 
-void exception_handler()
+extern "C" void exception_handler()
 {
     while(1)
         __asm__ volatile ("cli; hlt"); // halts computer
@@ -52,8 +49,7 @@ void idt_set_descriptor(u8 vector, void* isr, u8 flags)
 static bool vectors[IDT_MAX_DESCRIPTORS];
 extern void* isr_stub_table[];
 
-void idt_init(void);
-void idt_init()
+extern "C" void idt_init()
 {
     idtr.base = (uintptr_t)&idt[0];
     idtr.limit = (uint16_t)sizeof(idt_entry_t) * IDT_MAX_DESCRIPTORS - 1;
@@ -64,6 +60,6 @@ void idt_init()
     }
 
     __asm__ volatile ("lidt %0" : : "m"(idtr)); // load the new IDT
-    __asm__ volatile ("sti"); // set the interrupt flag
+    __asm__ volatile ("sti"); // enables interrupts
 }
 

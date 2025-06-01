@@ -3,14 +3,14 @@ extern "C" void kclear();
 extern "C" void kprint(const char*);
 extern "C" void disable_cursor();
 extern "C" void enable_cursor();
-extern "C" void PIC_remap(int, int);
 extern "C" void idt_init();
+extern "C" void PIC_remap(int, int);
 
 
 extern "C" int main() {
 
-    PIC_remap(0x20, 0x28); // remap irqs
     idt_init(); // loading idt
+    PIC_remap(0x20, 0x28); // remap irqs
 
     kprintf("Hello from DotOS!\n");
     kprintf("Kernel successfully loaded at 0x1000\n");

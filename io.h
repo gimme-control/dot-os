@@ -1,5 +1,8 @@
+#pragma once 
+
 #include <stdint.h> 
 
+#define u32 uint32_t 
 #define u16 uint16_t
 #define u8 uint8_t
 
@@ -20,6 +23,6 @@ static inline u8 inb(u16 port)
     return ret; 
 }
 
-void io_wait(void){
+static inline void io_wait(void){
     outb(0x80, 0); //dummy I/O write to introduce a small delay
 }

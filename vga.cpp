@@ -1,5 +1,5 @@
 #include <stdarg.h>
-#include "io.cpp" // (NOTE) Need to fix this to io.h at some point
+#include "io.h" 
 
 void update_cursor(int, int); 
 int VGA_WIDTH = 80; 
