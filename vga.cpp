@@ -1,8 +1,8 @@
 #include <stdarg.h>
-#include "io.h" 
+#include "io.h"
 
-void update_cursor(int, int); 
-int VGA_WIDTH = 80; 
+void update_cursor(int, int);
+int VGA_WIDTH = 80;
 
 // VGA text buffer
 volatile unsigned short* vga = (volatile unsigned short*)0xB8000;
@@ -10,7 +10,7 @@ int cursor_pos = 0; // Position in terms of characters, not bytes
 
 // Clear screen function
 void clear_screen() {
-    for (int i = 0; i < cursor_pos; i++) { // 80*25 -> cursor_pos
+    for (int i = 0; i < 80 * 25; i++) { // 80*25 -> cursor_pos
         vga[i] = (0x0F << 8) | ' '; // White on black space
     }
     cursor_pos = 0;
@@ -164,6 +164,8 @@ extern "C" void enable_cursor(u8 cursor_start, u8 cursor_end)
 
 void update_cursor(int x, int y)
 {
+    if (x < 0 || x >=80 || y < 0 || y >=25)
+        return ;
 	uint16_t pos = y * VGA_WIDTH + x;
 
 	outb(0x3D4, 0x0F);
