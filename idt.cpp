@@ -32,7 +32,9 @@ extern "C" void __attribute__ ((noreturn))
 extern "C" void exception_handler()
 {
     while(1)
+    {
         __asm__ volatile ("cli; hlt"); // halts computer
+    }
 }
 
 void idt_set_descriptor(u8 vector, void* isr, u8 flags)

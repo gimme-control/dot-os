@@ -22,6 +22,21 @@ void PIC_sendEOI(u8 irq)
 #define ICW1_INIT 0x10
 #define ICW4_8086 0x01
 
+// Selectively disable IRQs
+void IRQ_set_mask(u8 irq_line) {
+    u16 port;
+    u8 value;
+
+    if (irq_line < 8) {
+        port = PIC1_DATA;
+    } else {
+        port = PIC2_DATA;
+        irq_line -= 8;
+    }
+    value = inb(port) | (1 << irq_line);
+    outb(port, value);
+}
+
 extern "C" void PIC_remap(int offset1, int offset2) {
     u8 a1 = inb(PIC1_DATA); // save masks
     u8 a2 = inb(PIC2_DATA);
@@ -42,10 +57,11 @@ extern "C" void PIC_remap(int offset1, int offset2) {
     io_wait();
     outb(PIC2_DATA, ICW4_8086);
     io_wait();
-
+    
     // Restore saved masks
     outb(PIC1_DATA, a1);
     outb(PIC2_DATA, a2);
+
 }
 
 // Disables the entire PIC in case we want to use APIC or UAPIC 
@@ -53,21 +69,6 @@ void pic_disable(void)
 {
     outb(PIC1_DATA, 0xff);
     outb(PIC2_DATA, 0xff);
-}
-
-// Selectively disable IRQs
-void IRQ_set_mask(u8 irq_line) {
-    u16 port;
-    u8 value;
-
-    if (irq_line < 8) {
-        port = PIC1_DATA;
-    } else {
-        port = PIC2_DATA;
-        irq_line -= 8;
-    }
-    value = inb(port) | (1 << irq_line);
-    outb(port, value);
 }
 
 

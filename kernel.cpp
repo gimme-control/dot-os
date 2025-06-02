@@ -6,7 +6,6 @@ extern "C" void enable_cursor();
 extern "C" void idt_init();
 extern "C" void PIC_remap(int, int);
 
-
 extern "C" int main() {
 
     idt_init(); // loading idt
