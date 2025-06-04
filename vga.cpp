@@ -17,7 +17,7 @@ void clear_screen() {
 }
 
 // Print a single character to screen
-void print_char(char c) {
+extern "C" void print_char(char c) {
     if (c == '\n') {
         cursor_pos = ((cursor_pos / 80) + 1) * 80; // Move to next line
     } else if (c == '\r') {
@@ -47,7 +47,7 @@ void print_char(char c) {
 }
 
 // Print a null-terminated string
-void print_str(const char* str) {
+extern "C" void print_str(const char* str) {
     int count = 0;
     if (!str) {
         return;
@@ -58,7 +58,7 @@ void print_str(const char* str) {
 }
 
 // Print an integer (base 10)
-void print_int(int num) {
+extern "C" void print_int(int num) {
     if (num == 0) {
         print_char('0');
         return;

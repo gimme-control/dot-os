@@ -75,6 +75,11 @@ extern "C" void __attribute__ ((noreturn))
 
 extern "C" void _fault_handler(struct regs *r)
 {
+    // print_str("EXCEPTION: ");
+    // print_int(vector);
+    // print_char('\n');
+
+
     while(1)
     {
         kprint("Received interrupt: ");
