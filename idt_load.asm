@@ -6,7 +6,9 @@ isr_stub_%+%1:
 
 %macro isr_no_err_stub 1
 isr_stub_%+%1:
+    push dword %1
     call exception_handler
+    add esp, 4
     iret
 %endmacro
 
@@ -47,8 +49,8 @@ isr_no_err_stub 31
 
 global isr_stub_table
 isr_stub_table:
-%assign i 0 
-%rep    32 
-    dd isr_stub_%+i 
-%assign i i+1 
+%assign i 0
+%rep    32
+    dd isr_stub_%+i
+%assign i i+1
 %endrep

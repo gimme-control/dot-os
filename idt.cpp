@@ -1,6 +1,10 @@
 #include <stdint.h>
 #include "io.h"
 
+extern "C" void kprintf(const char* fmt, ...);
+extern "C" void print_char(char c);
+extern "C" void print_str(const char* str);
+extern "C" void print_int(int num);
 extern "C" void irq0();
 extern "C" void irq1();
 extern "C" void irq2();
@@ -41,10 +45,15 @@ typedef struct
 static idtr_t idtr;
 
 extern "C" void __attribute__ ((noreturn))
-    exception_handler(void);
+    exception_handler(int vector);
 
-extern "C" void exception_handler()
+extern "C" void exception_handler(int vector)
 {
+    // print_str("EXCEPTION: ");
+    // print_int(vector);
+    // print_char('\n');
+
+
     while(1)
     {
         __asm__ volatile ("cli; hlt"); // halts computer
