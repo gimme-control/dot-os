@@ -15,3 +15,10 @@ extern "C" void irq_handler(int irq) {
     }
     PIC_sendEOI(irq);
 }
+
+// (TODO) The interrupts will be defined here and can be called above
+void interrupt_0()
+{
+    kprintf("Divide by zero error"); 
+    __asm__ volatile ("cli; hlt"); 
+}
