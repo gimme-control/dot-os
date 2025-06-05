@@ -12,26 +12,27 @@ extern "C" void IRQ_clear_mask(uint8_t irq);
 
 
 extern "C" int main() {
-    // idt_init(); // loading idt
-    // PIC_remap(0x20, 0x28); // remap irqs
-    kclear();
+    idt_init(); // loading idt
+    PIC_remap(0x20, 0x28); // remap irqs
+    
+    enable_cursor(); 
 
-    kprintf("Hello from dot-os!\n");
-    kprintf("Kernel successfully loaded at 0x1000\n");
+    kprintf("Hello\n");
+    // kprintf("Kernel successfully loaded at 0x1000\n");
 
-    kprintf("Testing integers: %d, %d, %d\n", 42, -17, 0);
-    kprintf("Testing hex: %x, %x\n", 0xDEADBEEF, 255);
-    kprintf("Testing character: %c\n", 'A');
-    kprintf("Testing string: %s\n", "Success!");
+    // kprintf("Testing integers: %d, %d, %d\n", 42, -17, 0);
+    // kprintf("Testing hex: %x, %x\n", 0xDEADBEEF, 255);
+    // kprintf("Testing character: %c\n", 'A');
+    // kprintf("Testing string: %s\n", "Success!");
 
-    // Test edge cases
-    kprintf("Percent literal: %%\n");
-    kprintf("Multiple args: %d + %d = %d\n", 5, 3, 8);
+    // // Test edge cases
+    // kprintf("Percent literal: %%\n");
+    // kprintf("Multiple args: %d + %d = %d\n", 5, 3, 8);
 
 
     // (NOTE) Cursor drawn directly by the GPU, not the BIOS
-    disable_cursor();
-    enable_cursor();  // cursor_start & cursor_end args available
+    // disable_cursor();
+    // enable_cursor();  // cursor_start & cursor_end args available
 
     return 0;
 }

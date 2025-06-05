@@ -2,7 +2,8 @@
 #include "io.h"
 
 void update_cursor(int, int);
-int VGA_WIDTH = 80;
+const int VGA_WIDTH = 80;
+const int VGA_HEIGHT = 25;
 
 // VGA text buffer
 volatile unsigned short* vga = (volatile unsigned short*)0xB8000;
@@ -171,7 +172,7 @@ void update_cursor(int x, int y)
 	outb(0x3D4, 0x0F);
     outb(0x3D5, (u8) (pos & 0xFF));
 	outb(0x3D4, 0x0E);
-	outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
+	outb(0x3D5, (u8) ((pos >> 8) & 0xFF));
 }
 
 // Additional utility functions

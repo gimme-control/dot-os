@@ -78,25 +78,21 @@ extern "C" void _fault_handler(struct regs *r)
     // print_str("EXCEPTION: ");
     // print_int(vector);
     // print_char('\n');
-
-
-    while(1)
-    {
-        kprint("Received interrupt: ");
-        kprintf("%d", r->int_no);
-        unsigned int cr2;
-        asm volatile("mov %%cr2, %0" : "=r" (cr2));
-        kprint("\nCR2 Register: ");
-        kprintf("%x", cr2);
-        unsigned int stack_value;
-        asm volatile("movl 4(%%ebp), %0" : "=r" (stack_value));
-        kprint("\nValue on stack: ");
-        kprintf("%x", stack_value);
-        unsigned int return_pointer;
-        asm volatile("movl 8(%%ebp), %0" : "=r" (return_pointer));
-        kprint("\nReturn Pointer: ");
-        kprintf("%x", return_pointer);
-    }
+    // kprint("Received interrupt: ");
+    // kprintf("%d", r->int_no);
+    // unsigned int cr2;
+    // asm volatile("mov %%cr2, %0" : "=r" (cr2));
+    // kprint("\nCR2 Register: ");
+    // kprintf("%x", cr2);
+    // unsigned int stack_value;
+    // asm volatile("movl 4(%%ebp), %0" : "=r" (stack_value));
+    // kprint("\nValue on stack: ");
+    // kprintf("%x", stack_value);
+    // unsigned int return_pointer;
+    // asm volatile("movl 8(%%ebp), %0" : "=r" (return_pointer));
+    // kprint("\nReturn Pointer: ");
+    // kprintf("%x", return_pointer);
+    while(1);
 }
 
 void idt_set_descriptor(u8 vector, void* isr, u8 flags)
