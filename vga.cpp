@@ -6,8 +6,14 @@ const int VGA_WIDTH = 80;
 const int VGA_HEIGHT = 25;
 
 // VGA text buffer
-volatile unsigned short* vga = (volatile unsigned short*)0xB8000;
+volatile unsigned short* vga; // (TODO) Value gets zero initialized, need to add .bss routine in the bootloader - temp solution is vga_init() 
+
 int cursor_pos = 0; // Position in terms of characters, not bytes
+
+extern "C" void vga_init()
+{
+    vga = (volatile unsigned short*)0xB8000;
+}
 
 // Clear screen function
 void clear_screen() {

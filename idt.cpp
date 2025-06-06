@@ -75,7 +75,7 @@ extern "C" void __attribute__ ((noreturn))
 
 extern "C" void _fault_handler(struct regs *r)
 {
-    kprint("Received interrupt: ");
+    kprintf("Received interrupt: ");
     kprintf("%d", r->int_no);
     unsigned int cr2;
     asm volatile("mov %%cr2, %0" : "=r" (cr2));
