@@ -21,7 +21,6 @@ extern "C" int main() {
 
     kprintf("Hello\n");
     kprintf("Kernel successfully loaded at 0x1000\n");
-
     kprintf("Testing integers: %d, %d, %d\n", 42, -17, 0);
     kprintf("Testing hex: %x, %x\n", 0xDEADBEEF, 255);
     kprintf("Testing character: %c\n", 'A');
