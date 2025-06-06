@@ -39,15 +39,6 @@ extern "C"
 
 void isrs_install(); 
 
-typedef struct regs 
-{
-    unsigned int gs, fs, es, ds; 
-    unsigned int edi, esi, ebp, esp ,ebx, edx, ecx, eax; 
-    unsigned int int_no, err_code;  
-    unsigned int eip, cs, eglags, useresp, ss; 
-
-} __attribute__((packed)) regs; 
-
 struct idt_entry_t
 {
     u16 addr_low; // Lower 16 bits of ISRs address
@@ -92,7 +83,7 @@ extern "C" void _fault_handler(struct regs *r)
     while(1);
 }
 
-void idt_set_descriptor(u8 vector, void* isr, u8 flags)
+extern "C" void idt_set_descriptor(u8 vector, void* isr, u8 flags)
 {
     idt_entry_t* descriptor = &idt[vector];
     descriptor->addr_low    = (u32)((uintptr_t)isr & 0xFFFF);

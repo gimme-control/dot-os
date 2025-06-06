@@ -10,18 +10,31 @@
 #define PIC_EOI     0x20
 #define u8 uint8_t
 
-extern "C" {
-
-void PIC_sendEOI(u8 irq)
+extern "C"
 {
-    if(irq >= 8)
-        outb(PIC2_COMMAND, PIC_EOI);
+    extern void irq0();
+    extern void irq1();
+    extern void irq2();
+    extern void irq3();
+    extern void irq4();
+    extern void irq5();
+    extern void irq6();
+    extern void irq7();
+    extern void irq8();
+    extern void irq9();
+    extern void irq10();
+    extern void irq11();
+    extern void irq12();
+    extern void irq13();
+    extern void irq14();
+    extern void irq15();
 
-    outb(PIC1_COMMAND, PIC_EOI);
+    extern void idt_set_descriptor(u8, void*, u8); 
 }
 
+    
 /* reinitialize the PIC controllers, giving them specified vector offsets
-   rather than 8h and 70h, as configured by default */
+    rather than 8h and 70h, as configured by default */
 
 #define ICW1_ICW4	0x01		/* Indicates that ICW4 will be present */
 #define ICW1_SINGLE	0x02		/* Single (cascade) mode */
@@ -35,20 +48,33 @@ void PIC_sendEOI(u8 irq)
 #define ICW4_BUF_MASTER	0x0C		/* Buffered mode/master */
 #define ICW4_SFNM	0x10		/* Special fully nested (not) */
 
-// Selectively disable IRQs
-void IRQ_set_mask(u8 irq_line) {
-    u16 port;
-    u8 value;
 
-    if (irq_line < 8) {
-        port = PIC1_DATA;
-    } else {
-        port = PIC2_DATA;
-        irq_line -= 8;
+void irq_install();
+
+extern "C" {
+
+    void PIC_sendEOI(u8 irq)
+    {
+        if(irq >= 8)
+            outb(PIC2_COMMAND, PIC_EOI);
+
+        outb(PIC1_COMMAND, PIC_EOI);
     }
-    value = inb(port) | (1 << irq_line);
-    outb(port, value);
-}
+
+    // Selectively disable IRQs
+    void IRQ_set_mask(u8 irq_line) {
+        u16 port;
+        u8 value;
+
+        if (irq_line < 8) {
+            port = PIC1_DATA;
+        } else {
+            port = PIC2_DATA;
+            irq_line -= 8;
+        }
+        value = inb(port) | (1 << irq_line);
+        outb(port, value);
+    }
 }
 
 extern "C" void PIC_remap(int offset1, int offset2) {
@@ -73,6 +99,9 @@ extern "C" void PIC_remap(int offset1, int offset2) {
     // Unmask both PICs
     outb(PIC1_DATA, 0);
     outb(PIC2_DATA, 0);
+
+    irq_install();
+
 }
 
 // Disables the entire PIC in case we want to use APIC or UAPIC
@@ -110,3 +139,55 @@ static u16 __pic_get_irq_reg(int ocw3) {
 
 u16 pic_get_irr(void) { return __pic_get_irq_reg(PIC_READ_IRR); }
 u16 pic_get_isr(void) { return __pic_get_irq_reg(PIC_READ_ISR); }
+
+void *irq_routines[16] = 
+{
+    0, 0, 0, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 0, 0, 0 
+};
+
+static volatile int currentInterrupts[15];
+
+void irq_install()
+{
+    idt_set_descriptor(32, (void*)irq0, 0x8E);
+    idt_set_descriptor(33, (void*)irq1, 0x8E);
+    idt_set_descriptor(34, (void*)irq2, 0x8E);
+    idt_set_descriptor(35, (void*)irq3, 0x8E);
+    idt_set_descriptor(36, (void*)irq4, 0x8E);
+    idt_set_descriptor(37, (void*)irq5, 0x8E);
+    idt_set_descriptor(38, (void*)irq6, 0x8E);
+    idt_set_descriptor(39, (void*)irq7, 0x8E);
+    idt_set_descriptor(40, (void*)irq8, 0x8E);
+    idt_set_descriptor(41, (void*)irq9, 0x8E);
+    idt_set_descriptor(42, (void*)irq10, 0x8E);
+    idt_set_descriptor(43, (void*)irq11, 0x8E);
+    idt_set_descriptor(44, (void*)irq12, 0x8E);
+    idt_set_descriptor(45, (void*)irq13, 0x8E);
+    idt_set_descriptor(46, (void*)irq14, 0x8E);
+    idt_set_descriptor(47, (void*)irq15, 0x8E);
+
+    for(int i = 0; i < 16; i++){
+        currentInterrupts[i] = 0;
+    }
+}
+
+extern "C" void _irq_handler(regs *r)
+{
+    kprintf("Interrupt Received\n");
+    currentInterrupts[r -> int_no - 32] = 1;
+    void (*handler)(struct regs *r);
+
+    handler = (void (*)(regs*))irq_routines[r->int_no - 32];
+    if (handler)
+    {
+        handler(r);
+    }
+
+    if (r->int_no >= 40)
+    {
+        outb(0xA0, 0x20);   // END OF INTERRUPT command to PIC2
+    }
+
+    outb(0x20, 0x20);       // END OF INTERRUPT command to PIC1
+}

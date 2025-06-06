@@ -8,7 +8,6 @@ mkdir -p Binaries
 nasm "boot.asm" -f bin -o "Binaries/boot.bin"
 nasm "kernel.asm" -f elf -o "Binaries/kernel_entry.o"
 nasm "idt_load.asm" -f elf -o "Binaries/idt_load.o"
-nasm "irq.asm" -f elf -o "Binaries/irq.o"
 
 i386-elf-gcc -ffreestanding -m32 -g -c "kernel.cpp" -o "Binaries/kernel.o"
 i386-elf-gcc -ffreestanding -m32 -g -c "idt.cpp" -o "Binaries/idt.o"
@@ -23,7 +22,6 @@ i386-elf-ld -o "Binaries/full_kernel.elf" -g -Ttext 0x1000 \
     Binaries/idt_load.o \
     Binaries/idt.o \
     Binaries/pic.o \
-    Binaries/irq.o \
     Binaries/irq_cpp.o
 
 i386-elf-objcopy -O binary "Binaries/full_kernel.elf" "Binaries/full_kernel.bin"

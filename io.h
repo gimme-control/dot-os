@@ -27,5 +27,14 @@ static inline void io_wait(void){
     outb(0x80, 0); //dummy I/O write to introduce a small delay
 }
 
+typedef struct regs 
+{
+    unsigned int gs, fs, es, ds; 
+    unsigned int edi, esi, ebp, esp ,ebx, edx, ecx, eax; 
+    unsigned int int_no, err_code;  
+    unsigned int eip, cs, eglags, useresp, ss; 
+
+} __attribute__((packed)) regs; 
+
 extern "C" void kprint(const char*);
 extern "C" void kprintf(const char*, ...);
