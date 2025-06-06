@@ -155,6 +155,11 @@ start_protected_mode:
     mov ebp, 0x90000
     mov esp, ebp
 
+    ; Enable A20 line 
+    in al, 0x92
+    or al, 0x02 
+    out 0x92, al 
+
     call KERNEL_LOCATION
 
     jmp $
