@@ -140,11 +140,21 @@ static u16 __pic_get_irq_reg(int ocw3) {
 u16 pic_get_irr(void) { return __pic_get_irq_reg(PIC_READ_IRR); }
 u16 pic_get_isr(void) { return __pic_get_irq_reg(PIC_READ_ISR); }
 
-void *irq_routines[16] = 
+void* irq_routines[16] = 
 {
     0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0 
 };
+
+void irq_install_handler(int irq, void (*handler)(regs *r))
+{
+    irq_routines[irq] = (void*)handler; 
+}
+
+void irq_uninstall_handler(int irq) 
+{
+    irq_routines[irq] = 0; 
+}
 
 static volatile int currentInterrupts[15];
 
@@ -174,7 +184,6 @@ void irq_install()
 
 extern "C" void _irq_handler(regs *r)
 {
-    kprintf("Interrupt Received\n");
     currentInterrupts[r -> int_no - 32] = 1;
     void (*handler)(struct regs *r);
 
@@ -184,10 +193,6 @@ extern "C" void _irq_handler(regs *r)
         handler(r);
     }
 
-    if (r->int_no >= 40)
-    {
-        outb(0xA0, 0x20);   // END OF INTERRUPT command to PIC2
-    }
-
-    outb(0x20, 0x20);       // END OF INTERRUPT command to PIC1
+    u8 interrupt = r->int_no; // unsigned int to u8 conversion 
+    PIC_sendEOI(interrupt - 32);
 }
