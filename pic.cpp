@@ -48,7 +48,6 @@ extern "C"
 #define ICW4_BUF_MASTER	0x0C		/* Buffered mode/master */
 #define ICW4_SFNM	0x10		/* Special fully nested (not) */
 
-
 void irq_install();
 
 extern "C" {
@@ -110,7 +109,6 @@ void pic_disable(void)
     outb(PIC1_DATA, 0xff);
     outb(PIC2_DATA, 0xff);
 }
-
 
 extern "C" void IRQ_clear_mask(u8 irq_line) {
     u16 port;

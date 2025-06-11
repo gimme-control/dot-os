@@ -7,3 +7,9 @@ section .text
 _start:
     call main
     jmp $
+
+section .data
+
+section .rodata
+
+section .bss
