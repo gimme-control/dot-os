@@ -14,7 +14,7 @@ extern "C" void add_to_cbuff(cbuffer_t* buf, char c, bool is_uppercase) {
     buf -> top = ((buf -> top + 1) % buf -> size);
 }
 
-char get_from_cbuffer(cbuffer_t * buf) {
+extern "C" char get_from_cbuffer(cbuffer_t * buf) {
     if (buf -> bot == buf -> top)
         return 0; // return 0 if buffer is empty
 
@@ -24,7 +24,7 @@ char get_from_cbuffer(cbuffer_t * buf) {
     return res;  // res represents whichever character we end up returning from the cbuffer normally a number representing some ascii value
 }
 
-void rem_from_cbuff(cbuffer_t* buf) {
+extern "C" void rem_from_cbuff(cbuffer_t* buf) {
     if (buf -> bot != buf -> top)
         buf -> bot = ((buf -> bot +1) % buf -> size);
 } // as long as the cbuff isn't empty we can remove things by pointing to the bottom of the buffer
