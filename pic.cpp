@@ -182,7 +182,8 @@ void irq_install()
 
 extern "C" void _irq_handler(regs *r)
 {
-    currentInterrupts[r -> int_no - 32] = 1;
+    currentInterrupts[r->int_no - 32] = 1;
+    // kprintf("%i\n", r->int_no - 32); Useful for debugging interrupts
     void (*handler)(struct regs *r);
 
     handler = (void (*)(regs*))irq_routines[r->int_no - 32];
