@@ -9,7 +9,6 @@ const uint32_t freq = 10000; // Adjust this for the speed
 void onIrq0(struct InterruptRegisters *regs)
 {
     ticks += 1; 
-    kprintf("Timer Ticked!");
 }
 
 extern "C" void initTimer()
