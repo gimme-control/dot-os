@@ -13,6 +13,7 @@ i386-elf-gcc -ffreestanding -m32 -g -c "kernel.cpp" -o "Binaries/kernel.o"
 i386-elf-gcc -ffreestanding -m32 -g -c "idt.cpp" -o "Binaries/idt.o"
 i386-elf-gcc -ffreestanding -m32 -g -c "pic.cpp" -o "Binaries/pic.o"
 i386-elf-gcc -ffreestanding -m32 -g -c "vga.cpp" -o "Binaries/vga.o"
+i386-elf-gcc -ffreestanding -m32 -g -c "drivers/timer.cpp" -o "Binaries/timer.o"
 
 i386-elf-ld -o "Binaries/full_kernel.elf" -g -Ttext 0x1000 \
     Binaries/kernel_entry.o \
@@ -21,6 +22,7 @@ i386-elf-ld -o "Binaries/full_kernel.elf" -g -Ttext 0x1000 \
     Binaries/idt_load.o \
     Binaries/idt.o \
     Binaries/pic.o \
+    Binaries/timer.o 
 
 i386-elf-objcopy -O binary "Binaries/full_kernel.elf" "Binaries/full_kernel.bin"
 

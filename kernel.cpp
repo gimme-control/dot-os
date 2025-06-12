@@ -10,12 +10,14 @@ extern "C" void PIC_remap(int, int);
 extern "C" void irq_handler(int irq);
 extern "C" void IRQ_clear_mask(uint8_t irq);
 extern "C" void vga_init(); 
+extern "C" void initTimer(); 
 
 
 extern "C" int main() {
     idt_init(); // loading idt
     PIC_remap(0x20, 0x28); // remap irqs
     vga_init();
+    initTimer(); 
      
     enable_cursor(); 
 

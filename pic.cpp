@@ -144,7 +144,7 @@ void* irq_routines[16] =
     0, 0, 0, 0, 0, 0, 0, 0 
 };
 
-void irq_install_handler(int irq, void (*handler)(regs *r))
+extern "C" void irq_install_handler(int irq, void (*handler)(struct InterruptRegisters *regs))
 {
     irq_routines[irq] = (void*)handler; 
 }
