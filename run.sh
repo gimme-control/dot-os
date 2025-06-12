@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export PATH=$PATH:/usr/local/i386elfgcc/bin
+export PATH=/usr/local/i386elfgcc/bin:$PATH
 
 # Create binaries directory if it doesn't exist
 mkdir -p Binaries
@@ -30,4 +30,4 @@ ls -la Binaries/
 
 qemu-system-i386 -s -S -drive format=raw,file="Binaries/OS.bin",index=0,if=floppy -m 128M -no-reboot # (TODO) Add way to launch with a bigger res
 
-# For logging SMM, interrupts or exceptions in qemy, use: -d int
+# For logging SMM, interrupts or exceptions in qemu, use: -d int
