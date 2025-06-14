@@ -1,5 +1,5 @@
 #include <stdarg.h>
-#include "io.h"
+#include "util.h"
 
 void update_cursor(int, int);
 const int VGA_WIDTH = 80;
@@ -35,7 +35,6 @@ extern "C" void print_char(char c) {
         vga[cursor_pos] = (0x0F << 8) | c; // White on black
         cursor_pos++;
     }
-
 
      // Handle screen scrolling
      if (cursor_pos >= 80 * 25) {

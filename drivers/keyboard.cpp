@@ -1,5 +1,12 @@
-#include "../io.h"
-#include "../cbuff.h"
+#include "../util.h"
+
+extern "C"
+{
+    void add_to_cbuff(cbuffer_t*, char, bool);
+    char get_from_cbuffer(cbuffer_t* buf);
+    char rem_from_cbuff(cbuffer_t* buf);
+
+}
 
 const char kbdus[128] = // the entire us keyboard, if we want to try support other keyboard layouts have to add those yourself
 {

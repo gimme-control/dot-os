@@ -6,6 +6,14 @@
 #define u16 uint16_t
 #define u8 uint8_t
 
+typedef struct {
+    u32 top; 
+    u32 bot; 
+    u32 size; 
+    char* array; 
+
+} cbuffer_t;
+
 // IO helper functions 
 static inline void outb(u16 port, u8 val)
 {

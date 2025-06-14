@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "io.h"
+#include "util.h"
 
 extern "C" 
 {
@@ -51,7 +51,6 @@ struct idt_entry_t
 
 __attribute__((aligned(0x10)))
     static idt_entry_t idt[256]; // Array of IDT entries; aligned for performance
-
 
 typedef struct
 {
@@ -107,7 +106,6 @@ extern "C" void idt_init()
 
     __asm__ volatile ("lidt %0" : : "m"(idtr)); // load the new IDT
     __asm__ volatile ("sti"); // enables interrupts
-
 }
 
 void isrs_install()

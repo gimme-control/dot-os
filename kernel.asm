@@ -8,8 +8,3 @@ _start:
     call main
     jmp $
 
-section .data
-
-section .rodata
-
-section .bss
