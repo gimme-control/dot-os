@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "../io.h"
+#include "../util.h"
 
 extern "C" void irq_install_handler(int irq, void (*handler)(struct InterruptRegisters *regs));
 
