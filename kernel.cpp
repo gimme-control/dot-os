@@ -11,12 +11,14 @@ extern "C" void irq_handler(int irq);
 extern "C" void IRQ_clear_mask(uint8_t irq);
 extern "C" void vga_init(); 
 extern "C" void initTimer(); 
-
+extern "C" bool capsOn(); 
+extern "C" void keyboard_init(); 
 
 extern "C" int main() {
     idt_init(); // loading idt
     PIC_remap(0x20, 0x28); // remap irqs
     vga_init();
+    keyboard_init(); 
     initTimer(); 
      
     enable_cursor(); 
@@ -31,6 +33,7 @@ extern "C" int main() {
     // Test edge cases
     kprintf("Percent literal: %%\n");
     kprintf("Multiple args: %d + %d = %d\n", 5, 3, 8);
+
 
     // (NOTE) Cursor drawn directly by the GPU, not the BIOS
     disable_cursor();

@@ -6,6 +6,9 @@
 #define u16 uint16_t
 #define u8 uint8_t
 
+extern "C" void kprint(const char*);
+extern "C" void kprintf(const char*, ...);
+
 typedef struct {
     u32 top; 
     u32 bot; 
@@ -43,6 +46,3 @@ typedef struct regs
     unsigned int eip, cs, eglags, useresp, ss; 
 
 } __attribute__((packed)) regs; 
-
-extern "C" void kprint(const char*);
-extern "C" void kprintf(const char*, ...);
