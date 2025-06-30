@@ -25,15 +25,31 @@ void clear_screen() {
 
 // Print a single character to screen
 extern "C" void print_char(char c) {
-    if (c == '\n') {
-        cursor_pos = ((cursor_pos / 80) + 1) * 80; // Move to next line
-    } else if (c == '\r') {
-        cursor_pos = (cursor_pos / 80) * 80; // Move to start of current line
-    } else if (c == '\t') {
-        cursor_pos += 8 - (cursor_pos % 8); // Tab to next 8-char boundary
-    } else {
-        vga[cursor_pos] = (0x0F << 8) | c; // White on black
-        cursor_pos++;
+
+    switch(c)
+    {
+        case '\n': 
+        {
+            cursor_pos = ((cursor_pos / 80) + 1) * 80; // Move to next line
+        } break; 
+        case '\r': 
+        {
+            cursor_pos = (cursor_pos / 80) * 80; // Move to start of current line
+        } break; 
+        case '\t': 
+        {
+            cursor_pos += 8 - (cursor_pos % 8); // Tab to next 8-char boundary
+        } break; 
+        case '\b': 
+        {
+            --cursor_pos;
+            vga[cursor_pos] = (0x0F << 8) | ' ';
+        } break; 
+        default:
+        {
+            vga[cursor_pos] = (0x0F << 8) | c; // White on black
+            cursor_pos++;
+        } break; 
     }
 
      // Handle screen scrolling
